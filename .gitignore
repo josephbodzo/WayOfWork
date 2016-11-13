@@ -55,7 +55,9 @@ target/
 # User-specific files
 *.suo
 *.user
+*.userosscache
 *.sln.docstates
+*.vcxproj.filters
 
 # Build results
 
@@ -64,14 +66,21 @@ target/
 [Rr]elease/
 [Rr]eleases/
 x64/
-build/
+x86/
 bld/
 [Bb]in/
 [Oo]bj/
+[Ll]og/
 
 # Including Specific files
 !x64/liblept172.dll
 !x64/libtesseract304.dll
+
+
+# Visual Studio 2015 cache/options directory
+.vs/
+# Uncomment if you have tasks that create the project's static files in wwwroot
+#wwwroot/
 
 # Roslyn cache directories
 *.ide/
@@ -88,6 +97,12 @@ TestResult.xml
 [Dd]ebugPS/
 [Rr]eleasePS/
 dlldata.c
+
+# DNX
+project.lock.json
+project.fragment.lock.json
+artifacts/
+**/Properties/launchSettings.json
 
 *_i.c
 *_p.c
@@ -129,7 +144,7 @@ ipch/
 *.psess
 *.vsp
 *.vspx
-.vs
+*.sap
 
 # TFS 2012 Local Workspace
 $tf/
@@ -142,7 +157,8 @@ _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
 
-# JustCode is a .NET coding addin-in
+
+# JustCode is a .NET coding add-in
 .JustCode
 
 # TeamCity is a build add-in
@@ -151,9 +167,14 @@ _TeamCity*
 # DotCover is a Code Coverage Tool
 *.dotCover
 
+# Visual Studio code coverage results
+*.coverage
+*.coveragexml
+
 # NCrunch
-*.ncrunch*
+_NCrunch_*
 .*crunch*.local.xml
+nCrunchTemp_*
 _NCrunch*/
 
 # Installshield output folder
@@ -176,30 +197,33 @@ DocProject/Help/html
 publish/
 
 # Publish Web Output
-*.Publish.xml
+*.[Pp]ublish.xml
+*.azurePubxml
+# TODO: Comment the next line if you want to checkin your web deploy settings
+# but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
+*.publishproj
 
 # NuGet Packages Directory
-## TODO: If you have NuGet Package Restore enabled, uncomment the next 2 lines
+*.nupkg
+# The packages folder can be ignored because of Package Restore
 **/packages/*
-packages/*
-#*.nupkg
-## TODO: If the tool you use requires repositories.config
-## uncomment the next 2 lines
-##!**/packages/repositories.config
-##!packages/repositories.config
-##!**/packages/build/
+# except build/, which is used as an MSBuild target.
+!**/packages/build/
+# Uncomment if necessary however generally it will be regenerated when needed
+#!**/packages/repositories.config
+# NuGet v3's project.json files produces more ignoreable files
+*.nuget.props
+*.nuget.targets
 
-
-# Enable "build/" folder in the NuGet Packages folder since
-# NuGet packages use it for MSBuild targets.
-# This line needs to be after the ignore of the build folder
-# (and the packages folder if the line above has been uncommented)
-!packages/build/
 
 # Windows Azure Build Output
 csx
 *.build.csdef
+
+# Microsoft Azure Emulator
+ecf/
+rcf/
 
 # Windows Store app package directory
 AppPackages/
@@ -217,6 +241,7 @@ ClientBin/
 *.pfx
 *.publishsettings
 node_modules/
+orleans.codegen.cs
 
 # RIA/Silverlight projects
 Generated_Code/
@@ -239,6 +264,42 @@ App_Data/*.ldf
 
 # Microsoft Fakes
 FakesAssemblies/
+
+# GhostDoc plugin setting file
+*.GhostDoc.xml
+
+# Node.js Tools for Visual Studio
+.ntvs_analysis.dat
+
+# Visual Studio 6 build log
+*.plg
+
+# Visual Studio 6 workspace options file
+*.opt
+
+# Visual Studio 6 auto-generated workspace file (contains which files were open etc.)
+*.vbw
+
+# Paket dependency manager
+.paket/paket.exe
+paket-files/
+
+# FAKE - F# Make
+.fake/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# CodeRush
+.cr/
+
+# Python Tools for Visual Studio (PTVS)
+__pycache__/
+*.pyc
+
+# Cake - Uncomment if you are using it
+# tools/
 
 #############
 ## Windows detritus
