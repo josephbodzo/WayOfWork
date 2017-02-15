@@ -25,3 +25,15 @@
     - Remember to set you Accept header
     - We will be implementing SwashBuckle in the next tag to have a self documenting API
 
+## Tag : API Documentation
+- We add SwashBuckle to generate a self-documenting site for our API.
+- See the GitHub project [Page](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) for more details
+    - If you are not using ASP.NET Core then see [Older Version](https://github.com/domaindrivendev/Swashbuckle)
+    - Note that the Core version of SwashBuckle was still in beta at the time of writing this so it might change
+- We have change the startup of the site to now automatically launch the new UI.
+    - We added a index.html file to redirect to the swagger interface
+    - We added the static file middleware (see startup.cs)
+- You can try out the calls from the UI.
+    - For calls that need a body you can see the expected model on the right hand side of the call. Click on it and it will add the default model to the parameters text field.
+    - You can then modify any values and click 'Try it out' to invoke the method
+

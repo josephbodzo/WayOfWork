@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace WayOfWork
 {
     public class Startup
     {
+        private const string ApiName = "Way Of Work API";
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -18,10 +21,11 @@ namespace WayOfWork
             if (env.IsEnvironment("Development"))
             {
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-//                builder.AddApplicationInsightsSettings(developerMode: true);
+
             }
 
             builder.AddEnvironmentVariables();
+
             Configuration = builder.Build();
         }
 
@@ -30,8 +34,11 @@ namespace WayOfWork
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
             services.AddMvc();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = ApiName, Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -41,6 +48,20 @@ namespace WayOfWork
             loggerFactory.AddDebug();
 
             app.UseMvc();
+
+            // Add the swagger output. You can view the generated Swagger JSON at "/swagger/v1/swagger.json. Note the version number must match the one added in ConfigureServices above
+            app.UseSwagger();
+
+            // Add the swagger UI. Auto-generated, interactive docs at "/swagger
+            app.UseSwaggerUi(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", ApiName + " V1");
+            });
+
+            // Force a default load page when starting
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
         }
     }
 }
