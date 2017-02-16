@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.AspNetCore.Swagger;
+using WayOfWork.AppCode.SwaggerFilters;
 
 namespace WayOfWork
 {
@@ -17,13 +18,12 @@ namespace WayOfWork
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
 
             if (env.IsEnvironment("Development"))
             {
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-
             }
 
             builder.AddEnvironmentVariables();
@@ -39,9 +39,13 @@ namespace WayOfWork
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = ApiName, Version = "v1" });
+                c.SwaggerDoc("v1", new Info {Title = ApiName, Version = "v1"});
                 var filePath = GetXmlCommentsPath();
                 c.IncludeXmlComments(filePath);
+                c.DescribeAllEnumsAsStrings();
+                c.IgnoreObsoleteActions();
+
+                c.OperationFilter<AuthorisationKeyHeaderOperationFilter>();
             });
         }
 
@@ -57,21 +61,17 @@ namespace WayOfWork
             app.UseSwagger();
 
             // Add the swagger UI. Auto-generated, interactive docs at "/swagger
-            app.UseSwaggerUi(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", ApiName + " V1");
-            });
+            app.UseSwaggerUi(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", ApiName + " V1"); });
 
             // Force a default load page when starting
             app.UseDefaultFiles();
             app.UseStaticFiles();
-
         }
 
         private string GetXmlCommentsPath()
         {
             var app = PlatformServices.Default.Application;
-            return System.IO.Path.Combine(app.ApplicationBasePath, System.IO.Path.ChangeExtension(app.ApplicationName, "xml"));
+            return Path.Combine(app.ApplicationBasePath, Path.ChangeExtension(app.ApplicationName, "xml"));
         }
     }
 }

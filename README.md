@@ -38,3 +38,4 @@
     - For calls that need a body you can see the expected model on the right hand side of the call. Click on it and it will add the default model to the parameters text field.
     - You can then modify any values and click 'Try it out' to invoke the method
 - We are going to add various attributes, classes and comments to control the output of swagger over the next few commits.
+- We also add a Authorisation header to swagger but we never implement this header as it is just to show how it is done

@@ -2,9 +2,11 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using WayOfWork.AppCode.Attributes;
 using WayOfWork.Domain;
 using WayOfWork.Services;
 
@@ -57,6 +59,7 @@ namespace WayOfWork.Controllers
         /// <response code="400">Validation failed.</response>
         /// <response code="409">Conflict occurred while adding the book.</response>
         [HttpPost]
+        [UserKeyRequired]
         [ProducesResponseType(typeof(BookAddResult), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(IList<string>), StatusCodes.Status400BadRequest)]
@@ -80,6 +83,7 @@ namespace WayOfWork.Controllers
         ///     Updates the specified book.
         /// </summary>
         [HttpPut("{id}")]
+        [UserKeyOptional]
         [SwaggerResponse((int) HttpStatusCode.OK, typeof(Book), Description = "Book details")]
         [SwaggerResponse(StatusCodes.Status404NotFound, Description = "Specified book not found")]
         [SwaggerResponse((int) HttpStatusCode.BadGateway, typeof(IList<string>), Description = "Validation failed")]
