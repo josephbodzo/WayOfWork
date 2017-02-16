@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using WayOfWork.Domain;
 using WayOfWork.Services;
 
@@ -16,17 +18,27 @@ namespace WayOfWork.Controllers
             DbContext = new ContrivedDatabaseContext();
         }
 
-        public ContrivedDatabaseContext DbContext { get; private set; }
+        public ContrivedDatabaseContext DbContext { get; }
 
 
+        /// <summary>
+        ///     List all available books
+        /// </summary>
         [HttpGet]
+        [ProducesResponseType(typeof(IQueryable<Book>), StatusCodes.Status200OK)]
         public async Task<IActionResult> Get()
         {
             var result = await DbContext.LoadAll();
             return Ok(result);
         }
 
-        [HttpGet("{id}", Name="DefaultGet")]
+        /// <summary>
+        ///     Return a specified book
+        /// </summary>
+        [HttpGet("{id}", Name = "DefaultGet")]
+        [ProducesResponseType(typeof(Book), StatusCodes.Status200OK)]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Description = "Specified book not found")]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, typeof(IList<string>), Description = "Validation failed")]
         public async Task<IActionResult> Get(int id)
         {
             if (id < 1)
@@ -37,8 +49,18 @@ namespace WayOfWork.Controllers
             return Ok(result);
         }
 
+
+        /// <summary>
+        ///     Add a new book
+        /// </summary>
+        /// <response code="201" >Book successfully created. New BookId is returned with the location header to get its URI</response>
+        /// <response code="400">Validation failed.</response>
+        /// <response code="409">Conflict occurred while adding the book.</response>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]BookRequest bookRequest)
+        [ProducesResponseType(typeof(BookAddResult), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(IList<string>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Post([FromBody] BookRequest bookRequest)
         {
             var validationResult = ValidateBook(bookRequest);
             if (validationResult.Any())
@@ -46,15 +68,22 @@ namespace WayOfWork.Controllers
             var book = MapRequestToBook(bookRequest);
             book.Id = 0;
             var addResult = await DbContext.Insert(book);
+            // This is just for illustration purposes
             if (addResult == 0)
                 return StatusCode(StatusCodes.Status409Conflict);
             var result = new BookAddResult {Id = addResult};
-            return CreatedAtRoute("DefaultGet", new BookAddResult { Id = addResult }, result);
+            return CreatedAtRoute("DefaultGet", new BookAddResult {Id = addResult}, result);
         }
 
 
+        /// <summary>
+        ///     Updates the specified book.
+        /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody]BookRequest bookRequest)
+        [SwaggerResponse((int) HttpStatusCode.OK, typeof(Book), Description = "Book details")]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Description = "Specified book not found")]
+        [SwaggerResponse((int) HttpStatusCode.BadGateway, typeof(IList<string>), Description = "Validation failed")]
+        public async Task<IActionResult> Put(int id, [FromBody] BookRequest bookRequest)
         {
             var validationResult = ValidateBook(bookRequest);
             if (id < 1)
@@ -69,8 +98,13 @@ namespace WayOfWork.Controllers
             return Ok();
         }
 
-
+        /// <summary>
+        ///     Remove the specified book
+        /// </summary>
         [HttpDelete("{id}")]
+        [SwaggerResponse((int) HttpStatusCode.OK, Description = "Book deleted")]
+        [SwaggerResponse(StatusCodes.Status404NotFound, Description = "Specified book not found")]
+        [SwaggerResponse((int) HttpStatusCode.BadGateway, typeof(IList<string>), Description = "Validation failed")]
         public async Task<IActionResult> Delete(int id)
         {
             if (id < 1)
